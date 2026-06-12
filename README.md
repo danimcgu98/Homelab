@@ -45,6 +45,21 @@ The physical layout, from the internet down to the lab:
 
 The modem runs in bridge mode so the Firewalla handles all routing, firewalling, NAT, and the VPN gateway. The Firewalla connects to the switch over a bonded LAG for extra throughput and redundancy on that link. The switch then fans out to the access point, the NAS that holds backups, and the homelab server itself.
 
+## Hardware
+
+The gear that makes up the lab and what each piece does:
+
+| Device | Role |
+|---|---|
+| BOSGAME E4 Air Mini PC | The homelab server. Runs Ubuntu and hosts every container in the stack. |
+| UGREEN NAS | Network-attached storage that holds the nightly backups. |
+| Firewalla Gold Pro | Router, firewall, and VPN gateway. Everything in and out of the network goes through it. |
+| Ubiquiti Flex Switch | Managed switch that ties the Firewalla, access point, NAS, and server together. |
+| Firewalla AP 7 | WiFi 7 access point for wireless devices on the network. |
+| ISP Modem | Runs in bridge mode so it just passes the connection through to the Firewalla. |
+
+Running everything on a mini PC keeps the whole lab small and power-efficient, which matters for something that's on around the clock.
+
 ## Software Architecture
 
 ```
