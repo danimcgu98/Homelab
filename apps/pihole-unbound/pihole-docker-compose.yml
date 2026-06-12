@@ -1,0 +1,45 @@
+services:
+  unbound:
+    image: mvance/unbound:latest
+    container_name: unbound
+    restart: unless-stopped
+    volumes:
+      - ./unbound:/etc/unbound
+    networks:
+      dns_net:
+        ipv4_address: 172.20.0.2
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8080:80/tcp"
+    environment:
+      TZ: "${TZ}"
+      WEBPASSWORD: "${WEBPASSWORD}"
+      PIHOLE_DNS_: "172.20.0.2#5335"
+      DNSSEC: "true"
+      REV_SERVER: "true"
+      REV_SERVER_CIDR: "${REV_SERVER_CIDR}"
+      REV_SERVER_TARGET: "${REV_SERVER_TARGET}"
+      REV_SERVER_DOMAIN: "${REV_SERVER_DOMAIN}"
+      DNSMASQ_LISTENING: "all"
+      PIHOLE_DNS_USER_OPTS: "--local-service=0"
+    volumes:
+      - ./pihole/etc-pihole:/etc/pihole
+      - ./pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    depends_on:
+      - unbound
+    networks:
+      dns_net:
+        ipv4_address: 172.20.0.3
+
+networks:
+  dns_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24

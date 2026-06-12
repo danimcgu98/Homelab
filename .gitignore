@@ -1,2 +1,9 @@
 # Secrets
-scripts/secrets.env
+secrets.env
+.env
+apps/npm/npm-advanced-config.conf
+apps/authelia/configuration.yml
+apps/authelia/users_database.yml
+
+# Allow
+!*.example

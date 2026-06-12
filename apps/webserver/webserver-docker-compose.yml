@@ -1,0 +1,9 @@
+services:
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/www/homelab:/var/www/homelab:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro

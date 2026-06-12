@@ -1,0 +1,15 @@
+---
+# Users database for Authelia
+# Passwords must be hashed using argon2id.
+# Generate a hash by running:
+#   docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password 'yourpassword'
+# Then paste the output hash below.
+
+users:
+  nano:
+    displayname: "Nano"
+    # Replace this with your generated hash
+    password: "REPLACE_WITH_HASH"
+    email: nano@nanolab.local
+    groups:
+      - admins

@@ -1,0 +1,56 @@
+---
+theme: dark
+
+identity_validation:
+  reset_password:
+    jwt_secret: REPLACE_WITH_RANDOM_SECRET_1
+
+default_redirection_url: https://nanolab.local
+
+server:
+  address: tcp://0.0.0.0:9091/
+
+log:
+  level: warn
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      salt_length: 16
+      parallelism: 8
+      memory: 64
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: auth.nanolab.local
+      policy: bypass
+    - domain:
+        - nanolab.local
+      policy: one_factor
+
+session:
+  secret: REPLACE_WITH_RANDOM_SECRET_2
+  cookies:
+    - name: authelia_session
+      domain: nanolab.local
+      authelia_url: https://auth.nanolab.local
+      expiration: 15724800
+      inactivity: 2592000
+
+regulation:
+  max_retries: 5
+  find_time: 120
+  ban_time: 300
+
+storage:
+  encryption_key: REPLACE_WITH_RANDOM_SECRET_3
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt

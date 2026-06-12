@@ -1,0 +1,11 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3005:3001"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - TZ=America/Chicago
