@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nano Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="logo">
+    <span class="logo-bracket">[</span>nano lab<span class="logo-bracket">]</span>
+  </div>
+  <div class="header-right">
+    <div class="cert-dropdown-wrap">
+      <button class="cert-lock-btn" id="cert-lock-btn" onclick="toggleCertDropdown()" title="CA Certificate">🔒</button>
+      <div class="cert-dropdown" id="cert-dropdown">
+        <div class="cert-dropdown-header">🔐 Install CA Certificate</div>
+        <div class="cert-dropdown-body">
+          <div class="cert-os">
+            <div class="cert-os-label" onclick="toggleOS('windows')">Windows <span id="chevron-windows">▼</span></div>
+            <div id="os-windows" style="display:none">
+              <div class="cert-os-steps">
+                1. Download the cert below<br>
+                2. Rename <span>rootCA.pem</span> → <span>rootCA.crt</span><br>
+                3. Double-click → Install Certificate → Local Machine<br>
+                4. Place in <span>Trusted Root Certification Authorities</span><br>
+                5. Restart your browser
+              </div>
+            </div>
+          </div>
+          <div class="cert-os">
+            <div class="cert-os-label" onclick="toggleOS('ios')">iPhone / iPad <span id="chevron-ios">▼</span></div>
+            <div id="os-ios" style="display:none">
+              <div class="cert-os-steps">
+                1. Download & AirDrop/email <span>rootCA.pem</span><br>
+                2. Settings → General → VPN & Device Management → Install<br>
+                3. Settings → General → About → Certificate Trust Settings<br>
+                4. Enable full trust for <span>Nano Lab CA</span>
+              </div>
+            </div>
+          </div>
+          <div class="cert-os">
+            <div class="cert-os-label" onclick="toggleOS('android')">Android <span id="chevron-android">▼</span></div>
+            <div id="os-android" style="display:none">
+              <div class="cert-os-steps">
+                1. Download <span>rootCA.pem</span> to your device<br>
+                2. Settings → Security → Install from storage<br>
+                3. Select CA Certificate → name it <span>Nano Lab CA</span>
+              </div>
+            </div>
+          </div>
+          <div class="cert-download-row">
+            <a href="#" onclick="window.open('http://'+window.location.hostname+':8282/rootCA.pem')" style="color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(79,255,176,0.3);">⬇ Download rootCA.pem</a>
+            <span style="margin-left:0.5rem;color:var(--text-dim)">— rename to <span style="color:var(--text-mid)">rootCA.crt</span> on Windows</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="status-pill">online</div>
+    <span id="clock"></span>
+  </div>
+</header>
+
+<main>
+
+  <!-- SERVER INFO -->
+  <div class="section-label fade-in">System</div>
+  <div class="info-strip fade-in">
+    <div class="info-cell">
+      <div class="info-key">Host</div>
+      <div class="info-val" id="info-host">—</div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">Network</div>
+      <div class="info-val">LAN only</div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">Server</div>
+      <div class="info-val">Nginx</div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">Apps</div>
+      <div class="info-val" id="info-app-count">—</div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">Services</div>
+      <div class="info-val" id="info-service-count">—</div>
+    </div>
+  </div>
+
+  <!-- STATS STRIP -->
+  <div class="info-strip fade-in" id="stats-strip">
+    <div class="info-cell">
+      <div class="info-key">CPU</div>
+      <div class="info-val" id="stat-cpu">—</div>
+      <div class="stat-sub" id="stat-cpu-sub"></div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">CPU Temp</div>
+      <div class="info-val" id="stat-temp">—</div>
+      <div class="stat-sub" id="stat-temp-sub"></div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">Memory</div>
+      <div class="info-val" id="stat-mem">—</div>
+      <div class="stat-sub" id="stat-mem-sub"></div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">Disk</div>
+      <div class="info-val" id="stat-disk">—</div>
+      <div class="stat-sub" id="stat-disk-sub"></div>
+    </div>
+    <div class="info-cell">
+      <div class="info-key">Uptime</div>
+      <div class="info-val" id="stat-uptime">—</div>
+      <div class="stat-sub" id="stat-load-sub"></div>
+    </div>
+  </div>
+
+  <!-- APPS -->
+  <div class="section-label fade-in">
+    Applications
+    <div class="view-toggle">
+      <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="Grid view">⊞</button>
+      <button class="view-btn" id="btn-list" onclick="setView('list')" title="List view">≡</button>
+    </div>
+  </div>
+  <div class="apps-grid fade-in" id="apps-grid">
+
+    <!-- Placeholder for custom apps (real ones kept private) -->
+    <a href="#" class="app-card" target="_blank" rel="noopener">
+      <div class="app-card-header">
+        <div class="app-icon">🧩</div>
+        <span class="app-badge app">app</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Custom App</div>
+        <div class="app-path">example.local/app/</div>
+      </div>
+      <div class="app-desc">Example placeholder. Custom-built apps run here, kept private in this public version.</div>
+    </a>
+
+    <a href="https://music.example.local" target="_blank" rel="noopener" class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon">🎵</div>
+        <span class="app-badge static">static</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Navidrome</div>
+        <div class="app-path">music.example.local</div>
+      </div>
+      <div class="app-desc">Self-hosted music streaming. Compatible with any Subsonic app.</div>
+    </a>
+
+    <a href="https://vault.example.local" target="_blank" rel="noopener" class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon">🔑</div>
+        <span class="app-badge static">static</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Vaultwarden</div>
+        <div class="app-path">vault.example.local</div>
+      </div>
+      <div class="app-desc">Self-hosted password manager. Use with any Bitwarden-compatible app.</div>
+    </a>
+
+    </div>
+
+  <!-- SERVICES -->
+  <div class="section-label fade-in">Services</div>
+  <div class="apps-grid fade-in" id="services-grid">
+
+    <!-- Pi-hole -->
+    <a href="#" onclick="window.open('http://'+window.location.hostname+':8080/admin','_blank')" class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon">🕳️</div>
+        <span class="app-badge service">service</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Pi-hole</div>
+        <div class="app-path">example.local:8080/admin</div>
+      </div>
+      <div class="app-desc">DNS sinkhole admin panel. Monitor queries, manage blocklists, and configure local DNS records.</div>
+    </a>
+
+    <!-- Nginx Proxy Manager -->
+    <a href="#" onclick="window.open('http://'+window.location.hostname+':81','_blank')" class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon">🔀</div>
+        <span class="app-badge service">service</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Proxy Manager</div>
+        <div class="app-path">example.local:81</div>
+      </div>
+      <div class="app-desc">Nginx Proxy Manager. Manage reverse proxy hosts and SSL certificates via web UI.</div>
+    </a>
+
+    <!-- Uptime Kuma -->
+    <a href="#" onclick="window.open('http://'+window.location.hostname+':3005','_blank')" class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon">📡</div>
+        <span class="app-badge service">service</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Uptime Kuma</div>
+        <div class="app-path">example.local:3005</div>
+      </div>
+      <div class="app-desc">Service monitor. Tracks uptime of all homelab services and sends Discord alerts on downtime.</div>
+    </a>
+
+    <!-- Portainer -->
+    <a href="#" onclick="window.open('http://'+window.location.hostname+':9000','_blank')" class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon">🐳</div>
+        <span class="app-badge service">service</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Portainer</div>
+        <div class="app-path">example.local:9000</div>
+      </div>
+      <div class="app-desc">Docker management UI. Start, stop, restart containers and view logs without SSH.</div>
+    </a>
+
+    <!-- Ugreen NAS -->
+    <a href="http://nas.example.local" target="_blank" rel="noopener" class="app-card">
+      <div class="app-card-header">
+        <div class="app-icon">💾</div>
+        <span class="app-badge service">service</span>
+      </div>
+      <div class="app-info">
+        <div class="app-name">UGREEN NAS</div>
+        <div class="app-path">nas.local</div>
+      </div>
+      <div class="app-desc">Ugreen NAS admin panel. File storage and management.</div>
+    </a>
+
+  </div>
+
+
+</main>
+
+<footer>
+  <span>nano lab · local network only</span>
+  <span id="footer-date"></span>
+</footer>
+
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
